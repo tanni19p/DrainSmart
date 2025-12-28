@@ -2,11 +2,10 @@ const users = require("../data/users");
 const { generateToken } = require("../utils/jwt");
 
 exports.login = (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
-  const user = users.find(
-    u => u.email === email && u.password === password
-  );
+  const user = users.find(u => u.email === email);
+
 
   if (!user) {
     return res.status(401).json({ message: "Invalid credentials" });
@@ -19,3 +18,4 @@ exports.login = (req, res) => {
     role: user.role
   });
 };
+
