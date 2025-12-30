@@ -81,7 +81,7 @@ Always accessible emergency numbers:
 - **React Context API**
 - JavaScript (ES6+)
 
-### Backend *(in progress)*
+### Backend
 - **Node.js**
 - **Express.js**
 - RESTful APIs
