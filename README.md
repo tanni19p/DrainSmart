@@ -1,28 +1,44 @@
-# DrainSmart 
+# DrainSmart – Frontend 
 
-**DrainSmart** is a civic-tech platform designed to map and predict water-logging hotspots across Delhi using GIS-based visualization and data-driven risk analysis.
+This branch contains the **frontend implementation** of **DrainSmart**, a civic-tech platform for visualizing and analyzing urban water-logging risks in Delhi.
 
-## Problem
-Delhi experiences severe water-logging during monsoons due to inadequate drainage planning and lack of proactive risk assessment at the ward level.
+The frontend focuses on **user experience, data visualization, and accessibility**, and is designed to integrate seamlessly with backend APIs.
 
-## Solution
-DrainSmart integrates rainfall, drainage, and urban infrastructure data to:
-- Identify ward-wise water-logging risks
-- Visualize hotspots on an interactive map
-- Support proactive municipal decision-making
-- Improve citizen awareness and safety
+---
+
+## Features Implemented
+
+- Home dashboard with project overview and statistics
+- Ward-wise Risk Map (UI-based visualization)
+- Analytics dashboard for vulnerable wards
+- Citizen Portal (mock sign-in / sign-up)
+- Admin Portal (mock authentication)
+- Emergency contacts section (always accessible)
+- Light / Dark mode with persistent preference
+- Responsive and accessible UI
+
+---
 
 ## Tech Stack
-- Frontend: React.js, Vite, TailwindCSS, Lucide React(icons) 
-- Backend: Node.js, Express.js  
-- Data & Analytics: Static ward-level risk data (JSON, mock data), Designed for future integration with GIS and analytics pipelines
-- Tools & Platform: Git & Github, VS code, npm
 
-## Future Scope
-- Interactive GIS maps using Leaflet.js / Mapbox
-- Spatial database integration with PostgreSQL + PostGIS
-- Predictive analytics using Python-based rainfall models
-- Real-time alerts and citizen reporting
+- **React.js** (Vite)
+- **Tailwind CSS**
+- **Lucide Icons**
+- React Context API (theme management)
+- JavaScript (ES6+)
 
-## Team
-Debug Thugs – Hack4Delhi 2025
+> Note: Authentication and data are currently mocked for demonstration purposes.
+
+---
+
+## Folder Structure
+
+```text
+src/
+├── components/
+├── pages/
+├── context/
+├── data/
+├── utils/
+├── App.jsx
+└── main.jsx

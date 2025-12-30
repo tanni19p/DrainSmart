@@ -28,7 +28,8 @@ const App = () => {
         {activeView === 'about' && <AboutPage />}
       </main>
 
-      <Footer />
+      <Footer setActiveView={setActiveView} />
+
     </div>
   );
 };

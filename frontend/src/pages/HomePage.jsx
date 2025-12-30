@@ -84,6 +84,51 @@ const HomePage = ({ setActiveView }) => {
           </p>
         </Card>
       </div>
+
+      {/* Emergency Contacts */}
+      <div className="mt-12">
+        <div
+          className="
+            rounded-xl p-6
+            bg-slate-900/70
+            border border-red-500/30
+            "
+            >
+          <h2 className="text-xl font-bold text-red-300 mb-2 flex items-center gap-2">
+            🚨 Emergency Contacts
+          </h2>
+
+          <p className="text-sm text-slate-400 mb-6">
+            In case of severe water-logging or flooding, contact authorities
+            immediately.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card */}
+            <div className="bg-slate-950 border border-slate-700 rounded-lg p-4">
+              <p className="text-slate-300 font-medium">
+                Delhi Disaster Helpline
+              </p>
+              <p className="text-2xl font-bold text-red-400 mt-1">📞 1077</p>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-700 rounded-lg p-4">
+              <p className="text-slate-300 font-medium">Police</p>
+              <p className="text-2xl font-bold text-red-400 mt-1">🚓 112</p>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-700 rounded-lg p-4">
+              <p className="text-slate-300 font-medium">Ambulance</p>
+              <p className="text-2xl font-bold text-red-400 mt-1">🚑 108</p>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-700 rounded-lg p-4">
+              <p className="text-slate-300 font-medium">Fire Services</p>
+              <p className="text-2xl font-bold text-red-400 mt-1">🚒 101</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

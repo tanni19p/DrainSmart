@@ -1,50 +1,128 @@
-import Card from "../components/Card";
-
 const AboutPage = () => {
   return (
-    <div className="space-y-6">
-      <Card>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+      {/* Header */}
+      <div className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6 shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           About DrainSmart
-        </h2>
-        <p className="text-gray-600 dark:text-slate-300">
-          Methodology, data sources, and system overview
+        </h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-300">
+          System overview, methodology, and data-driven approach for urban
+          water-logging risk management
         </p>
-      </Card>
+      </div>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">
+      {/* Project Overview */}
+      <section className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           Project Overview
-        </h3>
-        <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
-          DrainSmart is a civic-tech platform designed to predict and visualize
-          urban water-logging risks in Delhi using GIS and data-driven analytics.
+        </h2>
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          DrainSmart is a civic-tech platform designed to predict, visualize,
+          and monitor urban water-logging risks across Delhi. The system
+          integrates geospatial data, historical flood patterns, and rainfall
+          insights to help municipal authorities take proactive decisions and
+          enable citizens to stay informed during monsoon seasons.
         </p>
-      </Card>
+        <p className="mt-3 text-gray-700 dark:text-gray-300 leading-relaxed">
+          By shifting from reactive response to predictive planning, DrainSmart
+          aims to reduce infrastructure damage, improve emergency preparedness,
+          and enhance public safety in flood-prone urban areas.
+        </p>
+      </section>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">
+      {/* Why It Matters */}
+      <section className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          Why DrainSmart?
+        </h2>
+        <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+          <li>Recurring water-logging disrupts daily life and public transport</li>
+          <li>Drainage infrastructure data is often fragmented and underutilized</li>
+          <li>Citizens lack real-time, localized risk awareness</li>
+          <li>Municipal planning is mostly reactive instead of predictive</li>
+        </ul>
+      </section>
+
+      {/* Data Sources */}
+      <section className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           Data Sources
-        </h3>
-        <ul className="list-disc pl-6 text-gray-600 dark:text-slate-300">
-          <li>India Meteorological Department (IMD)</li>
-          <li>Municipal Corporation of Delhi</li>
-          <li>Survey of India</li>
-          <li>Census of India</li>
+        </h2>
+        <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+          <li>India Meteorological Department (IMD) – rainfall data</li>
+          <li>Municipal Corporation of Delhi – drainage & ward data</li>
+          <li>Survey of India – topographical and spatial data</li>
+          <li>Census of India – population density and land use</li>
         </ul>
-      </Card>
+        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+          * Current implementation uses mock/sample datasets for demonstration.
+        </p>
+      </section>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">
+      {/* Risk Scoring */}
+      <section className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Risk Scoring Methodology
-        </h3>
-        <ul className="list-disc pl-6 text-gray-600 dark:text-slate-300">
-          <li>Historical flooding frequency (30%)</li>
-          <li>Drainage infrastructure capacity (25%)</li>
-          <li>Rainfall intensity prediction (25%)</li>
-          <li>Population density & land use (20%)</li>
-        </ul>
-      </Card>
+        </h2>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border dark:border-slate-700">
+            <p className="font-medium text-gray-900 dark:text-white">
+              Historical Flooding Frequency
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Weight: 30%
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border dark:border-slate-700">
+            <p className="font-medium text-gray-900 dark:text-white">
+              Drainage Infrastructure Capacity
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Weight: 25%
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border dark:border-slate-700">
+            <p className="font-medium text-gray-900 dark:text-white">
+              Rainfall Intensity Prediction
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Weight: 25%
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border dark:border-slate-700">
+            <p className="font-medium text-gray-900 dark:text-white">
+              Population Density & Land Use
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Weight: 20%
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* System Architecture */}
+      <section className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          System Architecture
+        </h2>
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          The platform follows a modular architecture with a React-based
+          frontend for visualization, a Node.js backend for APIs and data
+          handling, and a spatially-enabled database layer designed to support
+          GIS operations and analytics workflows.
+        </p>
+      </section>
+
+      {/* Disclaimer */}
+      <section className="text-center text-sm text-gray-500 dark:text-gray-400">
+        DrainSmart is a prototype developed for hackathon demonstration purposes.
+        All data representations are illustrative.
+      </section>
     </div>
   );
 };

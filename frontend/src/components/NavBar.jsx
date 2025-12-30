@@ -18,7 +18,7 @@ const NavBar = ({ activeView, setActiveView }) => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Droplets className="w-7 h-7 text-blue-600" />
+          <Droplets className="w-7 h-7 text-blue-600 dark:text-blue-400" />
           <span className="text-xl font-bold">DrainSmart</span>
         </div>
 
