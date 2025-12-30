@@ -15,3 +15,9 @@ export const getRiskDotColor = (risk) => {
     default: return 'bg-gray-500';
   }
 };
+
+export const riskColor = (risk) => {
+  if (risk === "High") return "#dc2626";
+  if (risk === "Medium") return "#f59e0b";
+  return "#16a34a";
+};
