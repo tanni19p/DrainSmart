@@ -95,20 +95,24 @@ Always accessible emergency numbers:
 
 ---
 
-### Risk Scoring Methodology (Planned)
+## Risk Scoring Methodology (Planned)
 
-Risk scores are computed using a weighted model:
-Historical flooding frequency — 30%
-Drainage infrastructure capacity — 25%
-Rainfall intensity prediction — 25%
-Population density & land use — 20%
+- Risk scores are computed using a weighted model:
+- Historical flooding frequency — 30%
+- Drainage infrastructure capacity — 25%
+- Rainfall intensity prediction — 25%
+- Population density & land use — 20%
 
-### Target Region
+## Target Region
 Delhi (Ward-level granularity)
 
-### Team
+--- 
+
+## Team
 Debug Thugs – Hack4Delhi 2025
 
-### ⚠️ Disclaimer
+---
+
+## ⚠️ Disclaimer
 DrainSmart is a prototype created for demonstration and evaluation purposes.
 Current data may be mocked or illustrative and should not be treated as official advisories.
