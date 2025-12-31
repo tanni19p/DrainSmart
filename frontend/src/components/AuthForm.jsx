@@ -6,8 +6,9 @@ const AuthForm = ({ role, onAuthSuccess }) => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const API = import.meta.env.VITE_API_URL;
-const handleSubmit = async (e) => {
+  const API = "http://localhost:5000";
+
+  const handleSubmit = async (e) => {
   e.preventDefault();
 
   const API = "http://localhost:5000";
