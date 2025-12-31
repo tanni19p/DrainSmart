@@ -1,21 +1,52 @@
+const bcrypt = require("bcryptjs");
 const users = require("../data/users");
 const { generateToken } = require("../utils/jwt");
 
-exports.login = (req, res) => {
-  const { email } = req.body;
+// SIGNUP
+exports.signup = async (req, res) => {
+  const { email, password, role } = req.body;
+
+  if (!email || !password || !role) {
+    return res.status(400).json({ message: "All fields required" });
+  }
+
+  if (!["admin", "citizen"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  const exists = users.find(u => u.email === email);
+  if (exists) {
+    return res.status(409).json({ message: "User already exists" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = {
+    email,
+    password: hashedPassword,
+    role
+  };
+
+  users.push(user);
+
+  const token = generateToken(user);
+  res.json({ token, role });
+};
+
+// LOGIN
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
 
   const user = users.find(u => u.email === email);
-
-
   if (!user) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
   const token = generateToken(user);
-
-  res.json({
-    token,
-    role: user.role
-  });
+  res.json({ token, role: user.role });
 };
-
