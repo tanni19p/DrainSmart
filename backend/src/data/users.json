@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "email": "admin@drainsmart.com",
+    "password": "$2b$10$3muwbAKChLsUPolp0SNfD.bQnQzFspTnvOwudeZYLnMBIW98/RMa.",
+    "role": "admin"
+  }
+]
