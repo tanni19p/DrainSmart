@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthForm from "../components/AuthForm";
 import { Shield } from "lucide-react";
-import { wards } from "../data/wards";
 import { getRiskColor } from "../utils/riskHelpers";
 
 const AdminPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  const API = import.meta.env.VITE_API_URL;
+  const [wards, setWards] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    fetch(`${API}/api/wards`)
+      .then((res) => res.json())
+      .then(setWards)
+      .catch(console.error);
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
@@ -25,7 +38,11 @@ const AdminPage = () => {
         </div>
 
         <button
-          onClick={() => setIsAuthenticated(false)}
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            setIsAuthenticated(false);
+          }}
           className="text-sm text-blue-600 dark:text-blue-400 underline"
         >
           Logout
@@ -33,7 +50,6 @@ const AdminPage = () => {
       </div>
 
       <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-6">
-
         <h3 className="font-bold mb-4">Ward Risk Overview</h3>
 
         <table className="w-full text-sm">
@@ -68,3 +84,4 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+

@@ -1,23 +1,37 @@
 import { useState } from "react";
 
 const AuthForm = ({ role, onAuthSuccess }) => {
-  const [mode, setMode] = useState("signin"); // signin | signup
+  const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const handleSubmit = (e) => {
+  const API = import.meta.env.VITE_API_URL;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Mock auth (replace with backend later)
-    if (email && password && (mode === "signin" || name)) {
+    try {
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      if (!res.ok) throw new Error("Login failed");
+
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
       onAuthSuccess();
+    } catch (err) {
+      alert("Invalid login");
     }
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-xl border border-gray-200 shadow-lg">
-      {/* Heading */}
       <h2 className="text-2xl font-bold text-gray-900 text-center mb-1">
         {mode === "signin" ? "Sign In" : "Sign Up"} as {role}
       </h2>
@@ -28,7 +42,6 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           : "Create a new account"}
       </p>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {mode === "signup" && (
           <input
@@ -36,9 +49,7 @@ const AuthForm = ({ role, onAuthSuccess }) => {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300
-                       text-gray-900 placeholder-gray-400
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 rounded-lg border"
             required
           />
         )}
@@ -48,9 +59,7 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300
-                     text-gray-900 placeholder-gray-400
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 rounded-lg border"
           required
         />
 
@@ -59,22 +68,18 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300
-                     text-gray-900 placeholder-gray-400
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 rounded-lg border"
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700
-                     text-white py-3 rounded-lg font-semibold transition"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold"
         >
           {mode === "signin" ? "Sign In" : "Sign Up"}
         </button>
       </form>
 
-      {/* Toggle */}
       <div className="text-center mt-4 text-sm text-gray-500">
         {mode === "signin" ? (
           <>
@@ -99,9 +104,8 @@ const AuthForm = ({ role, onAuthSuccess }) => {
         )}
       </div>
 
-      {/* Footer note */}
       <p className="text-xs text-gray-400 text-center mt-4">
-        * Mock authentication for demo
+        * Demo authentication (email-based)
       </p>
     </div>
   );
