@@ -1,107 +1,124 @@
 # DrainSmart
 
-DrainSmart is a civic technology platform designed to map, analyze, and predict water-logging hotspots across Delhi using GIS-based visualization and data-driven risk assessment. The project aims to support proactive municipal planning and improve citizen safety during the monsoon season.
+DrainSmart is a civic-technology platform designed to **map, analyze, and visualize urban water-logging risks** across Delhi using **GIS-based visualization and data-driven assessment**.
+
+The platform aims to support **proactive municipal planning** and improve **citizen safety during monsoon seasons** through ward-level insights, analytics dashboards, and emergency information.
 
 ---
 
 ## Problem Statement
 
-Delhi faces severe water-logging every monsoon due to uneven rainfall distribution, inadequate drainage capacity, and rapid urbanization.  
-Currently, water-logging management is largely reactive, relying on post-incident complaints rather than predictive planning. There is no unified, ward-level system that integrates rainfall, drainage, and infrastructure data to identify high-risk areas in advance.
+Delhi faces severe water-logging every monsoon due to uneven rainfall distribution, inadequate drainage capacity, and rapid urbanization.
 
-This results in traffic disruptions, property damage, public health risks, and inefficient allocation of municipal resources.
+Current water-logging management practices are largely **reactive**, relying on post-incident complaints rather than preventive planning. There is no unified, ward-level system that integrates rainfall, drainage, and infrastructure indicators to identify high-risk areas in advance.
+
+This results in traffic disruptions, infrastructure damage, public health risks, and inefficient allocation of municipal resources.
 
 ---
 
 ## Solution
 
-DrainSmart provides a GIS-based decision-support system that:
+DrainSmart provides a **GIS-enabled decision-support platform** that:
 
 - Identifies ward-wise water-logging risk zones  
-- Visualizes hotspots on an interactive map of Delhi  
-- Uses historical rainfall and infrastructure indicators to assess risk  
+- Visualizes hotspots using interactive, map-based interfaces  
+- Analyzes rainfall and infrastructure indicators to assess risk levels  
 - Supports proactive planning for municipal authorities  
-- Improves public awareness through a citizen-friendly interface  
+- Improves public awareness through a citizen-friendly portal  
 
-The platform shifts water-logging management from reactive response to preventive governance.
+The platform shifts water-logging management from **reactive response to preventive governance**.
 
 ---
 
 ## Key Features
 
-- Ward-level water-logging risk mapping  
+- Ward-level water-logging risk visualization  
 - Color-coded risk classification (Low / Medium / High)  
-- Interactive GIS map with detailed ward popups  
-- Rainfall and risk trend analytics  
-- Separate views for municipal authorities and citizens  
-- Early-warning indicators for high-risk zones  
+- Interactive ward-based risk display  
+- Analytics dashboard highlighting vulnerable wards  
+- Separate portals for municipal authorities and citizens  
+- Emergency contacts accessible from the home dashboard  
+- Light / Dark mode for accessibility and usability  
 
 ---
 
 ## Technology Stack
 
-**Frontend**
-- React.js  
-- Leaflet.js (GIS mapping)  
-- Tailwind CSS  
-- Chart.js / Recharts  
+### Frontend
+- **React.js** (Vite)
+- **Tailwind CSS**
+- **React Context API**
+- **Lucide Icons**
+- UI-based GIS visualization
 
-**Backend**
-- Node.js  
-- Express.js  
+### Backend
+- **Node.js**
+- **Express.js**
+- RESTful APIs for ward and risk data
 
-**Database**
-- PostgreSQL with PostGIS (spatial data support)  
+### Database *(planned / in progress)*
+- **PostgreSQL**
+- **PostGIS** (for spatial and GIS data support)
 
-**Analytics (Optional)**
-- Python (scikit-learn for risk prediction)
+### Analytics
+- Rule-based and statistical risk assessment models  
+- Advanced predictive analytics planned for future versions
 
 ---
 
-## System Architecture
+## System Architecture (High-Level)
 
-1. Data ingestion from rainfall, ward boundary, and drainage datasets  
-2. Preprocessing and risk score computation  
-3. Backend APIs serving ward and hotspot data  
-4. Frontend rendering interactive maps and dashboards  
+1. Collection of rainfall, ward boundary, and infrastructure datasets  
+2. Backend processing and risk score computation  
+3. REST APIs exposing ward-level risk and analytics data  
+4. Frontend rendering dashboards and map-based visualizations  
+5. Database layer planned for persistent storage and spatial queries  
 
 ---
 
 ## Data Sources
 
 - India Meteorological Department (IMD) – rainfall data  
-- Delhi Open Data Portal – ward boundaries and civic data  
-- Municipal Corporation of Delhi (MCD) reports (secondary references)  
+- Delhi Open Data Portal – ward boundaries and civic datasets  
+- Municipal Corporation of Delhi (MCD) reports  
 - OpenStreetMap – base mapping data  
 
-*Note: Some datasets may be simulated for prototype demonstration.*
+*Note: Some datasets are currently mocked or simulated for prototype demonstration.*
 
 ---
 
 ## Project Status
 
-DrainSmart is currently in the **prototype and active development phase**.  
-The project implements the core frontend and backend architecture, including the GIS-based map interface and foundational APIs for ward-level risk visualization.  
+DrainSmart is currently in a **functional prototype stage**.
 
-Advanced data integrations, real-time rainfall feeds, and predictive analytics are planned as part of future enhancements to extend the system’s capabilities for large-scale municipal deployment.
-
----
-
-## Team
-
-Debug thugs - Hack4Delhi 2025
+- Frontend UI and workflows are implemented  
+- Backend APIs are implemented  
+- Database integration and persistent storage are under development  
+- Authentication and analytics data are partially mocked for demonstration  
 
 ---
 
 ## Future Scope
 
-- Integration with real-time rainfall sensors  
-- Machine-learning-based flood prediction  
+- Database-backed GIS queries and spatial analytics  
+- Integration with real-time rainfall APIs and sensors  
+- Advanced GIS layers (drainage networks, elevation models)  
+- Machine-learning-based flood risk prediction  
 - Mobile alerts for citizens in high-risk wards  
 - Integration with municipal emergency response systems  
 
 ---
 
+## Team
+
+**Debug Thugs**  
+Hack4Delhi 2025
+
+---
+
 ## License
 
-This project is intended for academic and hackathon use.
+This project is developed as part of a hackathon and academic initiative.  
+All data sources referenced are publicly available.
+
+© 2025 DrainSmart
