@@ -1,5 +1,5 @@
 import { Droplets, Sun, Moon } from "lucide-react";
-import { useTheme } from "../Context/ThemeContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const NavBar = ({ activeView, setActiveView }) => {
   const { theme, toggleTheme } = useTheme();
