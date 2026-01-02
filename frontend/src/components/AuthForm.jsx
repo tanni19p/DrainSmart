@@ -8,50 +8,57 @@ const AuthForm = ({ role, onAuthSuccess }) => {
 
   const API = "http://localhost:5000";
 
+  const inputClass = `
+    w-full px-4 py-3 rounded-lg border
+    border-gray-300 dark:border-gray-700
+    bg-white dark:bg-gray-900
+    text-gray-900 dark:text-gray-100
+    placeholder-gray-400
+    focus:outline-none focus:ring-2 focus:ring-blue-500
+  `;
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const API = "http://localhost:5000";
+    const endpoint =
+      mode === "signup"
+        ? "/api/auth/signup"
+        : "/api/auth/login";
 
-  const endpoint =
-    mode === "signup"
-      ? "/api/auth/signup"
-      : "/api/auth/login";
+    const payload =
+      mode === "signup"
+        ? { email, password, role: role.toLowerCase() }
+        : { email, password };
 
-  const payload =
-    mode === "signup"
-      ? { email, password, role: role.toLowerCase() }
-      : { email, password };
+    try {
+      const res = await fetch(`${API}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  try {
-    const res = await fetch(`${API}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Authentication failed");
+      }
 
-    if (!res.ok) {
-      throw new Error(data.message || "Auth failed");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
+      onAuthSuccess();
+    } catch (err) {
+      alert(err.message);
     }
-
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-
-    onAuthSuccess();
-  } catch (err) {
-    alert(err.message);
-  }
-};
+  };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl border border-gray-200 shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 text-center mb-1">
+    <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-1">
         {mode === "signin" ? "Sign In" : "Sign Up"} as {role}
       </h2>
 
-      <p className="text-sm text-gray-600 text-center mb-6">
+      <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
         {mode === "signin"
           ? "Access your dashboard"
           : "Create a new account"}
@@ -64,7 +71,7 @@ const AuthForm = ({ role, onAuthSuccess }) => {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border"
+            className={inputClass}
             required
           />
         )}
@@ -74,7 +81,7 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border"
+          className={inputClass}
           required
         />
 
@@ -83,25 +90,25 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border"
+          className={inputClass}
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
         >
           {mode === "signin" ? "Sign In" : "Sign Up"}
         </button>
       </form>
 
-      <div className="text-center mt-4 text-sm text-gray-500">
+      <div className="text-center mt-4 text-sm text-gray-500 dark:text-gray-400">
         {mode === "signin" ? (
           <>
             Don’t have an account?{" "}
             <button
               onClick={() => setMode("signup")}
-              className="text-blue-600 hover:underline font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               Sign Up
             </button>
@@ -111,17 +118,15 @@ const AuthForm = ({ role, onAuthSuccess }) => {
             Already have an account?{" "}
             <button
               onClick={() => setMode("signin")}
-              className="text-blue-600 hover:underline font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               Sign In
             </button>
           </>
         )}
       </div>
-
     </div>
   );
 };
 
 export default AuthForm;
-

@@ -37,6 +37,7 @@ const CitizenPage = () => {
           className="
             w-full px-4 py-3 rounded-lg border
             bg-white text-gray-900 placeholder-gray-400
+            dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-400
             focus:outline-none focus:ring-2 focus:ring-blue-500
             "
         />
