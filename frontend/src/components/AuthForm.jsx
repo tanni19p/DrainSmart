@@ -1,12 +1,11 @@
 import { useState } from "react";
+import API_BASE_URL from "../config/api";
 
 const AuthForm = ({ role, onAuthSuccess }) => {
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-
-  const API = "http://localhost:5000";
 
   const inputClass = `
     w-full px-4 py-3 rounded-lg border
@@ -31,7 +30,7 @@ const AuthForm = ({ role, onAuthSuccess }) => {
         : { email, password };
 
     try {
-      const res = await fetch(`${API}${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
