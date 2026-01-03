@@ -8,12 +8,7 @@ const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://drain-smart-n683.vercel.app/",
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 
