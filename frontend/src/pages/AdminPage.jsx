@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import AuthForm from "../components/AuthForm";
 import { Shield } from "lucide-react";
 import { getRiskColor } from "../utils/riskHelpers";
+import API_BASE_URL from "../config/api";
+
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -16,7 +18,7 @@ const AdminPage = () => {
 
     const token = localStorage.getItem("token");
 
-    fetch(`${API}/api/wards`, {
+    fetch(`${API_BASE_URL}/api/wards`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
