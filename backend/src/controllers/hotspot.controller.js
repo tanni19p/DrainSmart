@@ -1,5 +1,4 @@
 const pool = require("../db");
-const { calculateRisk } = require("../services/risk.service");
 
 const getHotspots = async (req, res) => {
   try {
@@ -13,7 +12,7 @@ const getHotspots = async (req, res) => {
       FROM hotspots;
     `);
 
-    res.status(200).json(rows);
+    res.json(rows);
   } catch (error) {
     console.error("Error fetching hotspots:", error);
     res.status(500).json({ error: "Failed to fetch hotspots" });
@@ -40,7 +39,7 @@ const getNearbyHotspots = async (req, res) => {
         ST_X(geom::geometry) AS lng
       FROM hotspots
       WHERE ST_DWithin(
-        geom,
+        geom::geography,
         ST_MakePoint($1, $2)::geography,
         $3
       );
@@ -48,7 +47,7 @@ const getNearbyHotspots = async (req, res) => {
       [lng, lat, radius]
     );
 
-    res.status(200).json(rows);
+    res.json(rows);
   } catch (error) {
     console.error("Error fetching nearby hotspots:", error);
     res.status(500).json({ error: "Failed to fetch nearby hotspots" });
@@ -58,18 +57,19 @@ const getNearbyHotspots = async (req, res) => {
 const getHotspotSummary = async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT risk_level, COUNT(*) AS count
+      SELECT
+        LOWER(risk_level) AS level,
+        COUNT(*)::int AS count
       FROM hotspots
       GROUP BY risk_level;
     `);
 
-    
     const summary = { low: 0, medium: 0, high: 0 };
 
     rows.forEach(r => {
-      if (r.risk_level === 1) summary.low += Number(r.count);
-      if (r.risk_level === 2) summary.medium += Number(r.count);
-      if (r.risk_level === 3) summary.high += Number(r.count);
+      if (summary[r.level] !== undefined) {
+        summary[r.level] = r.count;
+      }
     });
 
     res.json(summary);
@@ -84,5 +84,3 @@ module.exports = {
   getNearbyHotspots,
   getHotspotSummary
 };
-
-
