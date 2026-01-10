@@ -14,7 +14,7 @@ const NavBar = ({ activeView, setActiveView }) => {
   ];
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b dark:border-gray-800">
+    <nav className="sticky top-0 z-[1000] bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
@@ -31,7 +31,7 @@ const NavBar = ({ activeView, setActiveView }) => {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition
                 ${
                   activeView === item.key
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-600 text-white shadow"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
             >
@@ -42,7 +42,8 @@ const NavBar = ({ activeView, setActiveView }) => {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="ml-3 p-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700"
+            className="ml-3 p-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700
+                       hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             title="Toggle theme"
           >
             {theme === "dark" ? (
