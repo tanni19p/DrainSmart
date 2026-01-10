@@ -4,40 +4,99 @@ import Card from "../components/Card";
 const HomePage = ({ setActiveView }) => {
   return (
     <div className="space-y-12">
-
       {/* ================= HERO ================= */}
-      <div className="relative overflow-hidden rounded-2xl p-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div
+        className="relative overflow-hidden rounded-2xl p-6 md:p-8 min-h-[280px]
+             bg-gradient-to-br from-blue-300 via-blue-200 to-indigo-200
+             dark:from-slate-900 dark:via-blue-800 dark:to-indigo-900
+             text-slate-900 dark:text-white
+             ring-1 ring-slate-300 dark:ring-white/10"
+      >
         {/* subtle background glow */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,white,transparent_60%)] opacity-10"></div>
 
-        <div className="relative z-10">
-          <h1 className="text-4xl font-bold mb-4">
-            Proactive Water-logging Risk Management
-          </h1>
-
-          <p className="max-w-3xl text-blue-100 mb-6">
-            DrainSmart uses GIS mapping and predictive analytics to identify
-            water-logging hotspots across Delhi, enabling proactive planning.
-          </p>
-
-          <div className="flex gap-4">
-            {/* Primary CTA */}
-            <button
-              onClick={() => setActiveView("map")}
-              className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold
-                         flex items-center gap-2 shadow hover:bg-blue-50 transition"
+        {/* HERO CONTENT */}
+        <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+          {/* LEFT: Message */}
+          <div>
+            <h1
+              className="text-3xl md:text-4xl font-semibold tracking-tight mb-2
+                     text-slate-900 dark:text-white"
             >
-              View Risk Map <ChevronRight size={18} />
-            </button>
+              Report water-logging issues.
+            </h1>
 
-            {/* Secondary CTA */}
-            <button
-              onClick={() => setActiveView("citizen")}
-              className="border border-white/60 px-6 py-3 rounded-lg font-semibold
-                         hover:bg-white/10 transition"
+            <h2
+              className="text-xl md:text-2xl font-medium mb-4
+                     text-slate-700 dark:text-blue-100"
             >
-              Citizen Portal
-            </button>
+              Help cities respond faster.
+            </h2>
+
+            <p
+              className="max-w-lg mb-5 text-sm leading-relaxed
+                    text-slate-700/90 dark:text-blue-100/80"
+            >
+              A civic platform for reporting and analyzing drainage issues using
+              GIS-based risk mapping and predictive insights.
+            </p>
+
+            <div className="flex gap-3">
+              {/* Primary CTA */}
+              <button
+                onClick={() => setActiveView("citizen")}
+                className="bg-white text-blue-700 px-5 py-2.5 rounded-md font-medium
+                     shadow-md hover:bg-blue-50 transition"
+              >
+                Report an Issue
+              </button>
+
+              {/* Secondary CTA */}
+              <button
+                onClick={() => setActiveView("map")}
+                className="border border-blue-400 px-5 py-2.5 rounded-md font-medium
+                     text-blue-700 hover:bg-blue-50
+                     dark:border-white/40 dark:text-white/90 dark:hover:bg-white/10
+                     transition"
+              >
+                View Risk Map
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT: Key Highlights */}
+          <div className="hidden md:grid grid-cols-2 gap-4 text-sm">
+            {[
+              {
+                title: "📍 GIS Risk Mapping",
+                desc: "Ward-level flood risk visualization",
+              },
+              {
+                title: "📊 Predictive Insights",
+                desc: "Data-driven preparedness planning",
+              },
+              {
+                title: "🧑 Citizens + Admin",
+                desc: "Unified reporting & governance",
+              },
+              {
+                title: "⏱ Fast Reporting",
+                desc: "Submit issues in under 2 minutes",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-lg bg-white/90 p-4 shadow-sm
+                     dark:bg-white/10"
+              >
+                <p className="font-semibold text-slate-900 dark:text-white">
+                  {item.title}
+                </p>
+                <p className="mt-1 text-slate-600 dark:text-blue-100/70">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -131,7 +190,11 @@ const HomePage = ({ setActiveView }) => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <EmergencyItem title="Delhi Disaster Helpline" number="1077" icon="📞" />
+          <EmergencyItem
+            title="Delhi Disaster Helpline"
+            number="1077"
+            icon="📞"
+          />
           <EmergencyItem title="Police" number="112" icon="🚓" />
           <EmergencyItem title="Ambulance" number="108" icon="🚑" />
           <EmergencyItem title="Fire Services" number="101" icon="🚒" />
@@ -149,9 +212,7 @@ const EmergencyItem = ({ title, number, icon }) => (
                border border-slate-200 dark:border-slate-700
                hover:shadow-md hover:scale-[1.02] transition block"
   >
-    <p className="text-slate-700 dark:text-slate-300 font-medium">
-      {title}
-    </p>
+    <p className="text-slate-700 dark:text-slate-300 font-medium">{title}</p>
     <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
       {icon} {number}
     </p>
@@ -160,4 +221,3 @@ const EmergencyItem = ({ title, number, icon }) => (
 );
 
 export default HomePage;
-
