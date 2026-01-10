@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { getWards } = require("../controllers/ward.controller");
+const { getWardForLocation } = require("../controllers/ward.controller");
 
-router.get("/", getWards);
+router.get("/lookup", getWardForLocation);
 
 module.exports = router;
