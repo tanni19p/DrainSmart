@@ -57,9 +57,7 @@ const getNearbyHotspots = async (req, res) => {
 const getHotspotSummary = async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT
-        LOWER(risk_level) AS level,
-        COUNT(*)::int AS count
+      SELECT risk_level, COUNT(*)::int AS count
       FROM hotspots
       GROUP BY risk_level;
     `);
@@ -67,17 +65,18 @@ const getHotspotSummary = async (req, res) => {
     const summary = { low: 0, medium: 0, high: 0 };
 
     rows.forEach(r => {
-      if (summary[r.level] !== undefined) {
-        summary[r.level] = r.count;
-      }
+      if (r.risk_level === 1) summary.low += r.count;
+      if (r.risk_level === 2) summary.medium += r.count;
+      if (r.risk_level === 3) summary.high += r.count;
     });
 
     res.json(summary);
-  } catch (error) {
-    console.error("Error fetching hotspot summary:", error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to fetch summary" });
   }
 };
+
 
 module.exports = {
   getHotspots,

@@ -7,8 +7,8 @@ const {
   getHotspotSummary
 } = require("../controllers/hotspot.controller");
 
-router.get("/summary", getHotspotSummary);
-router.get("/nearby", getNearbyHotspots);
 router.get("/", getHotspots);
+router.get("/nearby", getNearbyHotspots);
+router.get("/summary", getHotspotSummary);
 
 module.exports = router;
