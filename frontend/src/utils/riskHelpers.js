@@ -8,13 +8,11 @@ export const getRiskColor = (risk) => {
 };
 
 export const getRiskDotColor = (risk) => {
-  switch (risk) {
-    case 'High': return 'bg-red-500';
-    case 'Medium': return 'bg-yellow-500';
-    case 'Low': return 'bg-green-500';
-    default: return 'bg-gray-500';
-  }
+  if (risk === "High") return "bg-red-600";
+  if (risk === "Medium") return "bg-yellow-500";
+  return "bg-green-600";
 };
+
 
 export const riskColor = (risk) => {
   if (risk === "High") return "#dc2626";
