@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_BASE_URL from "../config/api";
+import { supabase } from "../supabaseClient";
 
 const AuthForm = ({ role, onAuthSuccess }) => {
   const [mode, setMode] = useState("signin");
@@ -16,51 +16,59 @@ const AuthForm = ({ role, onAuthSuccess }) => {
     focus:outline-none focus:ring-2 focus:ring-blue-500
   `;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const endpoint =
-      mode === "signup"
-        ? "/api/auth/signup"
-        : "/api/auth/login";
+  if (password.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
 
-    const payload =
-      mode === "signup"
-        ? { email, password, role: role.toLowerCase() }
-        : { email, password };
+  if (mode === "signup") {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: role.toLowerCase(),
+          name,
+        },
+      },
+    });
 
-    try {
-      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Authentication failed");
-      }
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-
-      onAuthSuccess();
-    } catch (err) {
-      alert(err.message);
+    if (error) {
+      alert(error.message);
+      return;
     }
-  };
+
+    alert("Signup successful. You can now sign in.");
+    setMode("signin");
+  }
+
+  if (mode === "signin") {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    onAuthSuccess(data.user);
+  }
+};
+
 
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-1">
+      <h2 className="text-2xl font-bold text-center mb-1">
         {mode === "signin" ? "Sign In" : "Sign Up"} as {role}
       </h2>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
-        {mode === "signin"
-          ? "Access your dashboard"
-          : "Create a new account"}
+      <p className="text-sm text-center mb-6 opacity-70">
+        {mode === "signin" ? "Access your dashboard" : "Create a new account"}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,13 +109,14 @@ const AuthForm = ({ role, onAuthSuccess }) => {
         </button>
       </form>
 
-      <div className="text-center mt-4 text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-center mt-4 text-sm opacity-70">
         {mode === "signin" ? (
           <>
             Don’t have an account?{" "}
             <button
+              type="button"
               onClick={() => setMode("signup")}
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              className="text-blue-600 hover:underline font-medium"
             >
               Sign Up
             </button>
@@ -116,8 +125,9 @@ const AuthForm = ({ role, onAuthSuccess }) => {
           <>
             Already have an account?{" "}
             <button
+              type="button"
               onClick={() => setMode("signin")}
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              className="text-blue-600 hover:underline font-medium"
             >
               Sign In
             </button>
@@ -129,3 +139,4 @@ const AuthForm = ({ role, onAuthSuccess }) => {
 };
 
 export default AuthForm;
+

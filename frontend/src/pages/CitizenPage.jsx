@@ -1,23 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../supabaseClient";
+
 import AuthForm from "../components/AuthForm";
 import Card from "../components/Card";
 import { wards } from "../data/wards";
 import { AlertTriangle, Phone, MapPin, Flag } from "lucide-react";
 
 const CitizenPage = () => {
-  // ✅ Auth (same pattern as Admin)
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
-  );
+  // ✅ AUTH — Supabase-based (ONLY change)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Store ONLY ward name (not object)
+  // ✅ Restore session on refresh
+  useEffect(() => {
+    const loadSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      setIsAuthenticated(!!session?.user);
+      setLoading(false);
+    };
+
+    loadSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // ✅ Store ONLY ward name (unchanged)
   const [savedWard, setSavedWard] = useState(
     localStorage.getItem("savedWard")
   );
 
   const [query, setQuery] = useState("");
 
-  // Report states
+  // Report states (unchanged)
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportSent, setReportSent] = useState(false);
   const [report, setReport] = useState({
@@ -26,11 +49,17 @@ const CitizenPage = () => {
     description: "",
   });
 
-  // ✅ DERIVED STATE (no useEffect, no warning)
+  // ✅ Derived state (unchanged)
   const selectedWard = savedWard
     ? wards.find((w) => w.name === savedWard) || null
     : null;
 
+  // ⏳ Prevent auth flicker
+  if (loading) {
+    return <div className="p-6">Loading...</div>;
+  }
+
+  // 🔐 Auth gate
   if (!isAuthenticated) {
     return (
       <AuthForm
@@ -84,9 +113,8 @@ const CitizenPage = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Citizen Portal</h2>
         <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
+          onClick={async () => {
+            await supabase.auth.signOut();
             localStorage.removeItem("savedWard");
             setIsAuthenticated(false);
           }}
