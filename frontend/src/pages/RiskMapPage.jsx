@@ -9,16 +9,11 @@ const riskMap = {
   3: "High",
 };
 
-const RiskMapPage = ({ userRole }) => {
+const RiskMapPage = () => {
   const [hotspots, setHotspots] = useState([]);
   const [selectedHotspot, setSelectedHotspot] = useState(null);
   const [riskFilter, setRiskFilter] = useState("All");
   const [loading, setLoading] = useState(true);
-
-  // Citizen report state (ONLY used if citizen)
-  const [severity, setSeverity] = useState(3);
-  const [description, setDescription] = useState("");
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     fetch("https://drainsmart.onrender.com/api/hotspots")
@@ -29,7 +24,7 @@ const RiskMapPage = ({ userRole }) => {
           name: spot.name,
           lat: spot.lat,
           lng: spot.lng,
-          risk: riskMap[spot.risk_level],
+          risk: riskMap[spot.risk_level], // 🔥 FIX
         }));
 
         setHotspots(normalized);
@@ -46,24 +41,6 @@ const RiskMapPage = ({ userRole }) => {
     riskFilter === "All"
       ? hotspots
       : hotspots.filter((spot) => spot.risk === riskFilter);
-
-  const submitReport = async () => {
-    if (!selectedHotspot) return;
-
-    await fetch("https://drainsmart.onrender.com/api/reports", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        hotspot_id: selectedHotspot.id,
-        severity,
-        description,
-      }),
-    });
-
-    setSubmitted(true);
-    setDescription("");
-    setTimeout(() => setSubmitted(false), 3000);
-  };
 
   if (loading) {
     return <Card>Loading risk map…</Card>;
@@ -96,7 +73,11 @@ const RiskMapPage = ({ userRole }) => {
       {/* ================= MAIN LAYOUT ================= */}
       <div className="grid md:grid-cols-4 gap-6">
         <div className="relative md:col-span-3 h-[520px] min-h-[520px] rounded-lg overflow-hidden">
-          <MapContainer center={[28.6139, 77.209]} zoom={10} className="h-full w-full">
+          <MapContainer
+            center={[28.6139, 77.209]}
+            zoom={10}
+            className="h-full w-full"
+          >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
             {filteredHotspots.map((spot) => (
@@ -125,6 +106,25 @@ const RiskMapPage = ({ userRole }) => {
               </CircleMarker>
             ))}
           </MapContainer>
+
+          {/* ================= LEGEND ================= */}
+          <div className="absolute bottom-4 right-4 bg-white dark:bg-slate-800 p-4 rounded-lg shadow border text-sm">
+            <p className="font-semibold mb-2">Risk Levels</p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-red-600" />
+                High Risk
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                Medium Risk
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-green-600" />
+                Low Risk
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ================= HOTSPOT LIST ================= */}
@@ -142,7 +142,9 @@ const RiskMapPage = ({ userRole }) => {
             >
               <div className="flex items-center gap-2 mb-2">
                 <span
-                  className={`w-3 h-3 rounded-full ${getRiskDotColor(spot.risk)}`}
+                  className={`w-3 h-3 rounded-full ${getRiskDotColor(
+                    spot.risk
+                  )}`}
                 />
                 <span className="font-semibold">{spot.name}</span>
               </div>
@@ -154,8 +156,8 @@ const RiskMapPage = ({ userRole }) => {
 
       {/* ================= DETAILS PANEL ================= */}
       {selectedHotspot && (
-        <div className="mt-6 p-4 rounded-lg bg-slate-100 dark:bg-slate-700 space-y-3">
-          <h3 className="font-semibold">{selectedHotspot.name}</h3>
+        <div className="mt-6 p-4 rounded-lg bg-slate-100 dark:bg-slate-700">
+          <h3 className="font-semibold mb-1">{selectedHotspot.name}</h3>
           <p className="text-sm text-slate-600 dark:text-slate-300">
             🚨 Risk Level: {selectedHotspot.risk}
             <br />
@@ -163,44 +165,6 @@ const RiskMapPage = ({ userRole }) => {
             <br />
             📍 Longitude: {selectedHotspot.lng}
           </p>
-
-          {/* ✅ Citizen-only reporting */}
-          {userRole === "citizen" && (
-            <>
-              <hr />
-              <h4 className="font-semibold">Report Water Logging</h4>
-
-              <select
-                value={severity}
-                onChange={(e) => setSeverity(Number(e.target.value))}
-                className="w-full border p-2 rounded"
-              >
-                <option value={1}>Low</option>
-                <option value={2}>Medium</option>
-                <option value={3}>High</option>
-              </select>
-
-              <textarea
-                placeholder="Optional description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full border p-2 rounded"
-              />
-
-              <button
-                onClick={submitReport}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Submit Report
-              </button>
-
-              {submitted && (
-                <p className="text-green-600 font-medium">
-                  Report submitted successfully ✅
-                </p>
-              )}
-            </>
-          )}
         </div>
       )}
     </Card>
@@ -208,4 +172,3 @@ const RiskMapPage = ({ userRole }) => {
 };
 
 export default RiskMapPage;
-
