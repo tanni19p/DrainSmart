@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Card from "../components/Card";
+import { predictWardRisks } from "../utils/predictRisk";
 
 const riskMap = {
   1: "Low",
@@ -34,7 +35,7 @@ const AnalyticsPage = () => {
     return <Card>Loading analytics…</Card>;
   }
 
-  // ---------- DERIVED ANALYTICS ----------
+  /* ================= DERIVED ANALYTICS ================= */
   const totalLocations = hotspots.length;
 
   const highRisk = hotspots.filter((h) => h.risk === "High");
@@ -44,9 +45,14 @@ const AnalyticsPage = () => {
   const MAX_VISIBLE = 10;
   const topHotspots = highRisk.slice(0, MAX_VISIBLE);
 
+  /* ================= PREDICTION ================= */
+  const predictedWards = predictWardRisks(hotspots);
+  const predictedHighRiskWards = predictedWards.filter(
+    (w) => w.predictedRisk === "High"
+  );
+
   return (
     <div className="space-y-8">
-
       {/* ================= HEADER ================= */}
       <Card>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
@@ -106,7 +112,7 @@ const AnalyticsPage = () => {
                          hover:bg-red-500/15 transition"
             >
               <div className="flex items-center gap-3">
-                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                <span className="w-3 h-3 rounded-full bg-red-500" />
                 <span className="font-semibold">{loc.name}</span>
               </div>
 
@@ -146,19 +152,35 @@ const AnalyticsPage = () => {
         </div>
       </Card>
 
-      {/* ================= INSIGHT ================= */}
-      <Card className="border-l-4 border-yellow-400">
-        <p className="text-sm text-slate-300">
-          ⚠️ <span className="font-semibold">Key Insight:</span>{" "}
-          {highRisk.length} locations are classified as high risk, indicating
-          concentrated infrastructure stress in specific urban zones rather than
-          uniform city-wide flooding.
+      {/* ================= PREDICTED WARDS ================= */}
+      <Card className="border-l-4 border-purple-500">
+        <h3 className="font-semibold mb-2 text-purple-400">
+          🔮 Predicted High-Risk Wards
+        </h3>
+
+        {predictedHighRiskWards.length === 0 ? (
+          <p className="text-sm text-slate-400">
+            No wards predicted to be high risk based on current data.
+          </p>
+        ) : (
+          <ul className="list-disc list-inside text-sm space-y-1">
+            {predictedHighRiskWards.map((ward) => (
+              <li key={ward.ward}>
+                <span className="font-semibold">{ward.ward}</span>{" "}
+                <span className="text-red-400">(Predicted High Risk)</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <p className="mt-2 text-xs text-slate-400">
+          Prediction based on historical hotspot density and severity trends.
         </p>
       </Card>
-
     </div>
   );
 };
 
 export default AnalyticsPage;
+
 
