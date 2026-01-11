@@ -26,11 +26,20 @@ const App = () => {
       } = await supabase.auth.getSession();
 
       if (session?.user) {
+        const role = session.user.user_metadata?.role || "citizen";
+
         setUser(session.user);
-        setUserRole(session.user.user_metadata?.role || "citizen");
+        setUserRole(role);
+
+        if (role === "admin") {
+          setActiveView("admin");
+        } else {
+          setActiveView("citizen");
+        }
       } else {
         setUser(null);
         setUserRole(null);
+        setActiveView("home");
       }
 
       setLoading(false);
@@ -42,9 +51,16 @@ const App = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
+        const role = session.user.user_metadata?.role || "citizen";
+
         setUser(session.user);
-        setUserRole(session.user.user_metadata?.role || "citizen");
-        setActiveView("map");
+        setUserRole(role);
+
+        if (role === "admin") {
+          setActiveView("admin");
+        } else {
+          setActiveView("citizen");
+        }
       } else {
         setUser(null);
         setUserRole(null);
@@ -55,10 +71,18 @@ const App = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // ✅ Role-based login handler
   const handleLogin = (user) => {
+    const role = user.user_metadata?.role || "citizen";
+
     setUser(user);
-    setUserRole(user.user_metadata?.role || "citizen");
-    setActiveView("map");
+    setUserRole(role);
+
+    if (role === "admin") {
+      setActiveView("admin");
+    } else {
+      setActiveView("citizen");
+    }
   };
 
   const logout = async () => {
@@ -82,9 +106,13 @@ const App = () => {
       />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {activeView === "home" && <HomePage setActiveView={setActiveView} />}
+        {activeView === "home" && (
+          <HomePage setActiveView={setActiveView} />
+        )}
 
-        {activeView === "map" && <RiskMapPage userRole={userRole} />}
+        {activeView === "map" && (
+          <RiskMapPage userRole={userRole} />
+        )}
 
         {activeView === "analytics" && <AnalyticsPage />}
 

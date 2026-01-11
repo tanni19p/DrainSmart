@@ -11,8 +11,17 @@ const riskMap = {
   2: "Medium",
   3: "High",
 };
-
 const CitizenPage = () => {
+  const inputClass = `
+  w-full px-4 py-3 rounded-lg border mb-3
+  bg-white
+  dark:bg-slate-900
+  border-slate-300 dark:border-slate-700
+  text-slate-900 dark:text-slate-100
+  placeholder-slate-400 dark:placeholder-slate-500
+  focus:outline-none focus:ring-2 focus:ring-blue-500
+`;
+
   /* ================= AUTH (UNCHANGED) ================= */
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -49,8 +58,8 @@ const CitizenPage = () => {
           id: spot.id,
           name: spot.name,
           risk: riskMap[spot.risk_level],
-          rainfall: "—",              // optional placeholder
-          vulnerableAreas: "—",        // optional placeholder
+          rainfall: "—", // optional placeholder
+          vulnerableAreas: "—", // optional placeholder
         }));
 
         setHotspots(normalized);
@@ -61,9 +70,7 @@ const CitizenPage = () => {
   }, []);
 
   /* ================= STATE (UNCHANGED) ================= */
-  const [savedWard, setSavedWard] = useState(
-    localStorage.getItem("savedWard")
-  );
+  const [savedWard, setSavedWard] = useState(localStorage.getItem("savedWard"));
   const [query, setQuery] = useState("");
 
   const [showReportForm, setShowReportForm] = useState(false);
@@ -85,10 +92,7 @@ const CitizenPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <AuthForm
-        role="Citizen"
-        onAuthSuccess={() => setIsAuthenticated(true)}
-      />
+      <AuthForm role="Citizen" onAuthSuccess={() => setIsAuthenticated(true)} />
     );
   }
 
@@ -106,8 +110,7 @@ const CitizenPage = () => {
   };
 
   const handleReportSubmit = () => {
-    const reports =
-      JSON.parse(localStorage.getItem("citizenReports")) || [];
+    const reports = JSON.parse(localStorage.getItem("citizenReports")) || [];
 
     reports.push({
       ward: selectedWard.name,
@@ -117,10 +120,7 @@ const CitizenPage = () => {
       time: new Date().toISOString(),
     });
 
-    localStorage.setItem(
-      "citizenReports",
-      JSON.stringify(reports)
-    );
+    localStorage.setItem("citizenReports", JSON.stringify(reports));
 
     setReport({ location: "", severity: "High", description: "" });
     setShowReportForm(false);
@@ -131,7 +131,6 @@ const CitizenPage = () => {
 
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Citizen Portal</h2>
@@ -146,7 +145,6 @@ const CitizenPage = () => {
           Logout
         </button>
       </div>
-
       {/* SEARCH */}
       <Card>
         <input
@@ -172,21 +170,17 @@ const CitizenPage = () => {
           </div>
         )}
       </Card>
-
       {!selectedWard && query.length === 0 && (
         <p className="text-sm text-slate-400 text-center">
           🔍 Search for your ward to view flood risk and safety information
         </p>
       )}
-
       {/* WARD DETAILS */}
       {selectedWard && (
         <Card>
           <h3 className="text-xl font-bold">{selectedWard.name}</h3>
 
-          <p className="mt-2 font-semibold">
-            Risk Level: {selectedWard.risk}
-          </p>
+          <p className="mt-2 font-semibold">Risk Level: {selectedWard.risk}</p>
 
           <div className="mt-6 grid md:grid-cols-3 gap-4">
             <button className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded">
@@ -235,63 +229,63 @@ const CitizenPage = () => {
           </div>
         </Card>
       )}
-
       {/* REPORT FORM */}
-      {showReportForm && (
-        <Card>
-          <h3 className="text-lg font-semibold mb-4">
-            🚨 Report Water-Logging
-          </h3>
+{showReportForm && (
+  <Card>
+    <h3 className="text-lg font-semibold mb-4">
+      🚨 Report Water-Logging
+    </h3>
 
-          <input
-            placeholder="Location / Landmark"
-            value={report.location}
-            onChange={(e) =>
-              setReport({ ...report, location: e.target.value })
-            }
-            className="w-full mb-3 px-3 py-2 rounded border"
-          />
+    <input
+      placeholder="Location / Landmark"
+      value={report.location}
+      onChange={(e) =>
+        setReport({ ...report, location: e.target.value })
+      }
+      className={inputClass}
+    />
 
-          <select
-            value={report.severity}
-            onChange={(e) =>
-              setReport({ ...report, severity: e.target.value })
-            }
-            className="w-full mb-3 px-3 py-2 rounded border"
-          >
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </select>
+    <select
+      value={report.severity}
+      onChange={(e) =>
+        setReport({ ...report, severity: e.target.value })
+      }
+      className={inputClass}
+    >
+      <option>High</option>
+      <option>Medium</option>
+      <option>Low</option>
+    </select>
 
-          <textarea
-            placeholder="Describe the situation..."
-            value={report.description}
-            onChange={(e) =>
-              setReport({ ...report, description: e.target.value })
-            }
-            className="w-full mb-4 px-3 py-2 rounded border"
-          />
+    <textarea
+      placeholder="Describe the situation..."
+      value={report.description}
+      onChange={(e) =>
+        setReport({ ...report, description: e.target.value })
+      }
+      rows={4}
+      className={`${inputClass} mb-4`}
+    />
 
-          <div className="flex gap-3">
-            <button
-              onClick={handleReportSubmit}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              Submit Report
-            </button>
-            <button
-              onClick={() => setShowReportForm(false)}
-              className="text-sm underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </Card>
-      )}
+    <div className="flex gap-3">
+      <button
+        onClick={handleReportSubmit}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+      >
+        Submit Report
+      </button>
+      <button
+        onClick={() => setShowReportForm(false)}
+        className="text-sm underline text-slate-500 dark:text-slate-400"
+      >
+        Cancel
+      </button>
+    </div>
+  </Card>
+)}
+
     </div>
   );
 };
 
 export default CitizenPage;
-

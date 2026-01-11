@@ -146,11 +146,11 @@ const HomePage = ({ setActiveView }) => {
           </div>
 
           <h3 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
-            92%
+            72%
           </h3>
 
           <div className="mt-3 h-1 w-full bg-gray-200 rounded">
-            <div className="h-1 w-[92%] bg-green-500 rounded"></div>
+            <div className="h-1 w-[72%] bg-green-500 rounded"></div>
           </div>
         </Card>
       </div>
@@ -172,8 +172,8 @@ const HomePage = ({ setActiveView }) => {
             Our Approach
           </h3>
           <p className="text-gray-600 dark:text-slate-300">
-            DrainSmart combines historical flood data, drainage analysis, and
-            rainfall predictions to enable early warnings and smarter decisions.
+            DrainSmart integrates ward-level flood risk data, rainfall patterns, and citizen-reported water-logging incidents to support early warnings, faster response, and data-driven municipal planning.
+
           </p>
         </Card>
       </div>

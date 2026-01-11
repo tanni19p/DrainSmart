@@ -25,6 +25,7 @@ const handleSubmit = async (e) => {
   }
 
   if (mode === "signup") {
+    // eslint-disable-next-line no-unused-vars
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -46,18 +47,32 @@ const handleSubmit = async (e) => {
   }
 
   if (mode === "signin") {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    onAuthSuccess(data.user);
+  if (error) {
+    alert(error.message);
+    return;
   }
+
+  // ✅ extract role from Supabase user metadata
+  const userRole = data.user.user_metadata?.role;
+
+  if (!userRole) {
+    alert("User role not found. Please contact support.");
+    return;
+  }
+
+  // ✅ store auth info locally
+  localStorage.setItem("token", data.session.access_token);
+  localStorage.setItem("role", userRole);
+
+  // ✅ notify parent
+  onAuthSuccess(data.user);
+}
+
 };
 
 
