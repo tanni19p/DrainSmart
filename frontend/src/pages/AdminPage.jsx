@@ -1,39 +1,64 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 import AuthForm from "../components/AuthForm";
 import { Shield, CheckCircle } from "lucide-react";
 import Card from "../components/Card";
-import API_BASE_URL from "../config/api";
+
+const riskMap = {
+  1: "Low",
+  2: "Medium",
+  3: "High",
+};
 
 const AdminPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
-  );
+  /* ================= AUTH ================= */
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [wards, setWards] = useState([]);
+  useEffect(() => {
+    const loadSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
+      setIsAuthenticated(!!session?.user);
+      setLoading(false);
+    };
+
+    loadSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  /* ================= HOTSPOTS (DB) ================= */
+  const [hotspots, setHotspots] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    fetch("https://drainsmart.onrender.com/api/hotspots")
+      .then((res) => res.json())
+      .then((data) => setHotspots(data))
+      .catch((err) =>
+        console.error("Failed to fetch admin hotspots", err)
+      );
+  }, [isAuthenticated]);
+
+  /* ================= REPORTS (LOCAL OK FOR PROTOTYPE) ================= */
   const [reports, setReports] = useState(() => {
     return JSON.parse(localStorage.getItem("citizenReports")) || [];
   });
 
-  /* ---------------- FETCH WARDS ---------------- */
-  useEffect(() => {
-    if (!isAuthenticated) return;
+  if (loading) {
+    return <div className="p-6">Loading...</div>;
+  }
 
-    const token = localStorage.getItem("token");
-
-    fetch(`${API_BASE_URL}/api/wards`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setWards(Array.isArray(data) ? data : []);
-      })
-      .catch(console.error);
-  }, [isAuthenticated]);
-
-  /* ---------------- AUTH ---------------- */
   if (!isAuthenticated) {
     return (
       <AuthForm
@@ -43,23 +68,25 @@ const AdminPage = () => {
     );
   }
 
-  /* ---------------- KPI CALCULATIONS (SAFE) ---------------- */
-  const totalWards = wards.length;
+  /* ================= DERIVED ANALYTICS ================= */
 
-  const highRiskWards = wards.filter(
-    (w) => w.riskLevel === "High"
+  const totalHotspots = hotspots.length;
+
+  const highRiskHotspots = hotspots.filter(
+    (h) => h.risk_level === 3
   ).length;
 
-  const totalHotspots = wards.reduce(
-    (sum, w) => sum + (w.hotspots || 0),
-    0
-  );
+  const uniqueWards = [
+    ...new Set(hotspots.map((h) => h.name)),
+  ];
 
-  const priorityWards = wards.filter(
-    (w) => w.isPriority
+  const priorityWards = uniqueWards.filter((name) =>
+    hotspots.some(
+      (h) => h.name === name && h.risk_level === 3
+    )
   ).length;
 
-  /* ---------------- REPORT HANDLER ---------------- */
+  /* ================= REPORT HANDLER ================= */
   const handleResolveReport = (index) => {
     const updatedReports = reports.filter((_, i) => i !== index);
     setReports(updatedReports);
@@ -81,9 +108,8 @@ const AdminPage = () => {
         </div>
 
         <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
+          onClick={async () => {
+            await supabase.auth.signOut();
             setIsAuthenticated(false);
           }}
           className="text-sm underline text-blue-600"
@@ -96,13 +122,15 @@ const AdminPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <p className="text-sm text-slate-400">Total Wards</p>
-          <p className="text-2xl font-bold">{totalWards}</p>
+          <p className="text-2xl font-bold">
+            {uniqueWards.length}
+          </p>
         </Card>
 
         <Card>
-          <p className="text-sm text-slate-400">High Risk Wards</p>
+          <p className="text-sm text-slate-400">High Risk Hotspots</p>
           <p className="text-2xl font-bold text-red-500">
-            {highRiskWards}
+            {highRiskHotspots}
           </p>
         </Card>
 
@@ -121,46 +149,44 @@ const AdminPage = () => {
         </Card>
       </div>
 
-      {/* WARD TABLE */}
+      {/* HOTSPOT TABLE */}
       <Card>
-        <h3 className="font-bold mb-4">Ward Risk Overview</h3>
+        <h3 className="font-bold mb-4">
+          Hotspot Risk Overview
+        </h3>
 
-        {wards.length === 0 ? (
+        {hotspots.length === 0 ? (
           <p className="text-sm text-slate-400">
-            No ward data available.
+            No hotspot data available.
           </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left border-b">
-                <th className="pb-2">Ward</th>
+                <th className="pb-2">Location</th>
                 <th className="pb-2">Risk</th>
-                <th className="pb-2">Hotspots</th>
                 <th className="pb-2">Action</th>
               </tr>
             </thead>
             <tbody>
-              {wards.map((ward, index) => (
+              {hotspots.map((spot) => (
                 <tr
-                  key={index}
+                  key={spot.id}
                   className="border-b last:border-none"
                 >
-                  <td className="py-2">{ward.name}</td>
+                  <td className="py-2">{spot.name}</td>
                   <td className="py-2">
                     <span
                       className={`px-2 py-1 rounded text-xs ${
-                        ward.riskLevel === "High"
+                        riskMap[spot.risk_level] === "High"
                           ? "bg-red-500/20 text-red-400"
-                          : ward.riskLevel === "Medium"
+                          : riskMap[spot.risk_level] === "Medium"
                           ? "bg-yellow-500/20 text-yellow-400"
                           : "bg-green-500/20 text-green-400"
                       }`}
                     >
-                      {ward.riskLevel || "Low"}
+                      {riskMap[spot.risk_level]}
                     </span>
-                  </td>
-                  <td className="py-2">
-                    {ward.hotspots || 0}
                   </td>
                   <td className="py-2">
                     <button className="text-xs px-3 py-1 rounded bg-slate-700 hover:bg-slate-600">
@@ -235,3 +261,4 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+

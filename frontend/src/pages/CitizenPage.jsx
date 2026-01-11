@@ -3,15 +3,20 @@ import { supabase } from "../supabaseClient";
 
 import AuthForm from "../components/AuthForm";
 import Card from "../components/Card";
-import { wards } from "../data/wards";
 import { AlertTriangle, Phone, MapPin, Flag } from "lucide-react";
 
+// 🔁 Same mapping as RiskMap
+const riskMap = {
+  1: "Low",
+  2: "Medium",
+  3: "High",
+};
+
 const CitizenPage = () => {
-  // ✅ AUTH — Supabase-based (ONLY change)
+  /* ================= AUTH (UNCHANGED) ================= */
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Restore session on refresh
   useEffect(() => {
     const loadSession = async () => {
       const {
@@ -33,14 +38,34 @@ const CitizenPage = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ✅ Store ONLY ward name (unchanged)
+  /* ================= HOTSPOTS (DB) ================= */
+  const [hotspots, setHotspots] = useState([]);
+
+  useEffect(() => {
+    fetch("https://drainsmart.onrender.com/api/hotspots")
+      .then((res) => res.json())
+      .then((data) => {
+        const normalized = data.map((spot) => ({
+          id: spot.id,
+          name: spot.name,
+          risk: riskMap[spot.risk_level],
+          rainfall: "—",              // optional placeholder
+          vulnerableAreas: "—",        // optional placeholder
+        }));
+
+        setHotspots(normalized);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch citizen hotspots", err);
+      });
+  }, []);
+
+  /* ================= STATE (UNCHANGED) ================= */
   const [savedWard, setSavedWard] = useState(
     localStorage.getItem("savedWard")
   );
-
   const [query, setQuery] = useState("");
 
-  // Report states (unchanged)
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportSent, setReportSent] = useState(false);
   const [report, setReport] = useState({
@@ -49,17 +74,15 @@ const CitizenPage = () => {
     description: "",
   });
 
-  // ✅ Derived state (unchanged)
+  /* ================= DERIVED ================= */
   const selectedWard = savedWard
-    ? wards.find((w) => w.name === savedWard) || null
+    ? hotspots.find((w) => w.name === savedWard) || null
     : null;
 
-  // ⏳ Prevent auth flicker
   if (loading) {
     return <div className="p-6">Loading...</div>;
   }
 
-  // 🔐 Auth gate
   if (!isAuthenticated) {
     return (
       <AuthForm
@@ -71,7 +94,7 @@ const CitizenPage = () => {
 
   const suggestions =
     query.length > 0
-      ? wards.filter((w) =>
+      ? hotspots.filter((w) =>
           w.name.toLowerCase().includes(query.toLowerCase())
         )
       : [];
@@ -150,7 +173,6 @@ const CitizenPage = () => {
         )}
       </Card>
 
-      {/* EMPTY STATE */}
       {!selectedWard && query.length === 0 && (
         <p className="text-sm text-slate-400 text-center">
           🔍 Search for your ward to view flood risk and safety information
@@ -166,12 +188,6 @@ const CitizenPage = () => {
             Risk Level: {selectedWard.risk}
           </p>
 
-          <div className="mt-4 text-sm space-y-1">
-            <p>🌧 Rainfall: {selectedWard.rainfall} mm</p>
-            <p>⚠ Hotspots: {selectedWard.vulnerableAreas}</p>
-          </div>
-
-          {/* ACTIONS */}
           <div className="mt-6 grid md:grid-cols-3 gap-4">
             <button className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded">
               <Phone size={16} /> Emergency
@@ -195,7 +211,6 @@ const CitizenPage = () => {
             </p>
           )}
 
-          {/* SAFETY TIPS */}
           <div className="mt-6">
             <h4 className="font-semibold flex items-center gap-2 mb-2">
               <AlertTriangle size={16} /> Safety Tips
@@ -279,3 +294,4 @@ const CitizenPage = () => {
 };
 
 export default CitizenPage;
+

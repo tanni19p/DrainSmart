@@ -1,17 +1,48 @@
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
-import { wards } from "../data/wards";
+
+const riskMap = {
+  1: "Low",
+  2: "Medium",
+  3: "High",
+};
 
 const AnalyticsPage = () => {
+  const [hotspots, setHotspots] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://drainsmart.onrender.com/api/hotspots")
+      .then((res) => res.json())
+      .then((data) => {
+        const normalized = data.map((spot) => ({
+          id: spot.id,
+          name: spot.name,
+          risk: riskMap[spot.risk_level],
+        }));
+
+        setHotspots(normalized);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch analytics hotspots", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <Card>Loading analytics…</Card>;
+  }
+
   // ---------- DERIVED ANALYTICS ----------
-  const totalLocations = wards.length;
+  const totalLocations = hotspots.length;
 
-  const highRisk = wards.filter(w => w.risk === "High");
-  const mediumRisk = wards.filter(w => w.risk === "Medium");
-  const lowRisk = wards.filter(w => w.risk === "Low");
+  const highRisk = hotspots.filter((h) => h.risk === "High");
+  const mediumRisk = hotspots.filter((h) => h.risk === "Medium");
+  const lowRisk = hotspots.filter((h) => h.risk === "Low");
 
-  // Top high-risk hotspots (limit for readability)
   const MAX_VISIBLE = 10;
-const topHotspots = highRisk.slice(0, MAX_VISIBLE);
+  const topHotspots = highRisk.slice(0, MAX_VISIBLE);
 
   return (
     <div className="space-y-8">
@@ -62,24 +93,21 @@ const topHotspots = highRisk.slice(0, MAX_VISIBLE);
             High-Risk Hotspots
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-  Showing {topHotspots.length} of {highRisk.length} high-risk locations
-</p>
-
+            Showing {topHotspots.length} of {highRisk.length} high-risk locations
+          </p>
         </div>
 
         <div className="space-y-3">
-          {topHotspots.map((loc, index) => (
+          {topHotspots.map((loc) => (
             <div
-              key={index}
+              key={loc.id}
               className="flex items-center justify-between p-4 rounded-lg
                          bg-red-500/10 border border-red-500/20
                          hover:bg-red-500/15 transition"
             >
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                <span className="font-semibold">
-                  {loc.name}
-                </span>
+                <span className="font-semibold">{loc.name}</span>
               </div>
 
               <span className="text-sm font-medium text-red-400">
@@ -97,58 +125,34 @@ const topHotspots = highRisk.slice(0, MAX_VISIBLE);
         </h3>
 
         <div className="space-y-4">
-          {/* High */}
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>High Risk</span>
-              <span>{Math.round((highRisk.length / totalLocations) * 100)}%</span>
+          {[
+            { label: "High Risk", count: highRisk.length, color: "bg-red-500" },
+            { label: "Medium Risk", count: mediumRisk.length, color: "bg-yellow-400" },
+            { label: "Low Risk", count: lowRisk.length, color: "bg-green-500" },
+          ].map(({ label, count, color }) => (
+            <div key={label}>
+              <div className="flex justify-between text-sm mb-1">
+                <span>{label}</span>
+                <span>{Math.round((count / totalLocations) * 100)}%</span>
+              </div>
+              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded">
+                <div
+                  className={`h-2 ${color} rounded`}
+                  style={{ width: `${(count / totalLocations) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded">
-              <div
-                className="h-2 bg-red-500 rounded"
-                style={{ width: `${(highRisk.length / totalLocations) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Medium */}
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>Medium Risk</span>
-              <span>{Math.round((mediumRisk.length / totalLocations) * 100)}%</span>
-            </div>
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded">
-              <div
-                className="h-2 bg-yellow-400 rounded"
-                style={{ width: `${(mediumRisk.length / totalLocations) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Low */}
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>Low Risk</span>
-              <span>{Math.round((lowRisk.length / totalLocations) * 100)}%</span>
-            </div>
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded">
-              <div
-                className="h-2 bg-green-500 rounded"
-                style={{ width: `${(lowRisk.length / totalLocations) * 100}%` }}
-              />
-            </div>
-          </div>
+          ))}
         </div>
       </Card>
 
       {/* ================= INSIGHT ================= */}
       <Card className="border-l-4 border-yellow-400">
         <p className="text-sm text-slate-300">
-          ⚠️ <span className="font-semibold">Key Insight:</span>  
-          {highRisk.length} locations are classified as high risk, with a strong
-          concentration around underpasses, arterial roads, and drainage crossings.
-          This suggests infrastructure bottlenecks as the primary contributors
-          rather than widespread residential flooding.
+          ⚠️ <span className="font-semibold">Key Insight:</span>{" "}
+          {highRisk.length} locations are classified as high risk, indicating
+          concentrated infrastructure stress in specific urban zones rather than
+          uniform city-wide flooding.
         </p>
       </Card>
 
@@ -157,3 +161,4 @@ const topHotspots = highRisk.slice(0, MAX_VISIBLE);
 };
 
 export default AnalyticsPage;
+
