@@ -1,55 +1,250 @@
 import { useState } from "react";
 import AuthForm from "../components/AuthForm";
+import Card from "../components/Card";
 import { wards } from "../data/wards";
+import { AlertTriangle, Phone, MapPin, Flag } from "lucide-react";
 
 const CitizenPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // ✅ Auth (same pattern as Admin)
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  // ✅ Store ONLY ward name (not object)
+  const [savedWard, setSavedWard] = useState(
+    localStorage.getItem("savedWard")
+  );
+
   const [query, setQuery] = useState("");
+
+  // Report states
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportSent, setReportSent] = useState(false);
+  const [report, setReport] = useState({
+    location: "",
+    severity: "High",
+    description: "",
+  });
+
+  // ✅ DERIVED STATE (no useEffect, no warning)
+  const selectedWard = savedWard
+    ? wards.find((w) => w.name === savedWard) || null
+    : null;
 
   if (!isAuthenticated) {
     return (
-      <AuthForm role="Citizen" onAuthSuccess={() => setIsAuthenticated(true)} />
+      <AuthForm
+        role="Citizen"
+        onAuthSuccess={() => setIsAuthenticated(true)}
+      />
     );
   }
 
-  const foundWard = wards.find((w) =>
-    w.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const suggestions =
+    query.length > 0
+      ? wards.filter((w) =>
+          w.name.toLowerCase().includes(query.toLowerCase())
+        )
+      : [];
+
+  const handleSelectWard = (ward) => {
+    setSavedWard(ward.name);
+    localStorage.setItem("savedWard", ward.name);
+    setQuery("");
+  };
+
+  const handleReportSubmit = () => {
+    const reports =
+      JSON.parse(localStorage.getItem("citizenReports")) || [];
+
+    reports.push({
+      ward: selectedWard.name,
+      location: report.location,
+      severity: report.severity,
+      description: report.description,
+      time: new Date().toISOString(),
+    });
+
+    localStorage.setItem(
+      "citizenReports",
+      JSON.stringify(reports)
+    );
+
+    setReport({ location: "", severity: "High", description: "" });
+    setShowReportForm(false);
+    setReportSent(true);
+
+    setTimeout(() => setReportSent(false), 3000);
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+
+      {/* HEADER */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Citizen Portal</h2>
         <button
-          onClick={() => setIsAuthenticated(false)}
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("savedWard");
+            setIsAuthenticated(false);
+          }}
           className="text-sm text-blue-600 dark:text-blue-400 underline"
         >
           Logout
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-6">
+      {/* SEARCH */}
+      <Card>
         <input
           type="text"
           placeholder="Search your ward..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="
-            w-full px-4 py-3 rounded-lg border
-            bg-white text-gray-900 placeholder-gray-400
-            dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-400
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            "
+          className="w-full px-4 py-3 rounded-lg border dark:bg-gray-900"
         />
-      </div>
 
-      {foundWard && (
-        <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-6">
-          <h3 className="text-xl font-bold">{foundWard.name}</h3>
-          <p>Risk Level: {foundWard.risk}</p>
-          <p>Rainfall: {foundWard.rainfall}mm</p>
-          <p>Hotspots: {foundWard.vulnerableAreas}</p>
-        </div>
+        {suggestions.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {suggestions.map((ward) => (
+              <button
+                key={ward.id}
+                onClick={() => handleSelectWard(ward)}
+                className="block w-full text-left px-4 py-2 rounded-lg
+                bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
+              >
+                {ward.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* EMPTY STATE */}
+      {!selectedWard && query.length === 0 && (
+        <p className="text-sm text-slate-400 text-center">
+          🔍 Search for your ward to view flood risk and safety information
+        </p>
+      )}
+
+      {/* WARD DETAILS */}
+      {selectedWard && (
+        <Card>
+          <h3 className="text-xl font-bold">{selectedWard.name}</h3>
+
+          <p className="mt-2 font-semibold">
+            Risk Level: {selectedWard.risk}
+          </p>
+
+          <div className="mt-4 text-sm space-y-1">
+            <p>🌧 Rainfall: {selectedWard.rainfall} mm</p>
+            <p>⚠ Hotspots: {selectedWard.vulnerableAreas}</p>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="mt-6 grid md:grid-cols-3 gap-4">
+            <button className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded">
+              <Phone size={16} /> Emergency
+            </button>
+
+            <button className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded">
+              <MapPin size={16} /> View on Map
+            </button>
+
+            <button
+              onClick={() => setShowReportForm(true)}
+              className="flex items-center justify-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded"
+            >
+              <Flag size={16} /> Report Water-Logging
+            </button>
+          </div>
+
+          {reportSent && (
+            <p className="mt-4 text-green-500 text-sm">
+              ✅ Report submitted successfully
+            </p>
+          )}
+
+          {/* SAFETY TIPS */}
+          <div className="mt-6">
+            <h4 className="font-semibold flex items-center gap-2 mb-2">
+              <AlertTriangle size={16} /> Safety Tips
+            </h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              {selectedWard.risk === "High" && (
+                <>
+                  <li>Avoid underpasses and flooded roads</li>
+                  <li>Do not walk through moving water</li>
+                </>
+              )}
+              {selectedWard.risk === "Medium" && (
+                <>
+                  <li>Monitor weather updates</li>
+                  <li>Secure belongings near drains</li>
+                </>
+              )}
+              {selectedWard.risk === "Low" && (
+                <li>Stay alert during heavy rainfall</li>
+              )}
+            </ul>
+          </div>
+        </Card>
+      )}
+
+      {/* REPORT FORM */}
+      {showReportForm && (
+        <Card>
+          <h3 className="text-lg font-semibold mb-4">
+            🚨 Report Water-Logging
+          </h3>
+
+          <input
+            placeholder="Location / Landmark"
+            value={report.location}
+            onChange={(e) =>
+              setReport({ ...report, location: e.target.value })
+            }
+            className="w-full mb-3 px-3 py-2 rounded border"
+          />
+
+          <select
+            value={report.severity}
+            onChange={(e) =>
+              setReport({ ...report, severity: e.target.value })
+            }
+            className="w-full mb-3 px-3 py-2 rounded border"
+          >
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+
+          <textarea
+            placeholder="Describe the situation..."
+            value={report.description}
+            onChange={(e) =>
+              setReport({ ...report, description: e.target.value })
+            }
+            className="w-full mb-4 px-3 py-2 rounded border"
+          />
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleReportSubmit}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Submit Report
+            </button>
+            <button
+              onClick={() => setShowReportForm(false)}
+              className="text-sm underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </Card>
       )}
     </div>
   );
