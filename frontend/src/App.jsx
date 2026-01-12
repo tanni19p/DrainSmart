@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import NavBar from "./components/NavBar.jsx";
 import Footer from "./components/Footer.jsx";
+import RainOverlay from "./components/RainOverlay";
 
 import HomePage from "./pages/HomePage.jsx";
 import RiskMapPage from "./pages/RiskMapPage.jsx";
@@ -30,12 +31,7 @@ const App = () => {
 
         setUser(session.user);
         setUserRole(role);
-
-        if (role === "admin") {
-          setActiveView("admin");
-        } else {
-          setActiveView("citizen");
-        }
+        setActiveView(role === "admin" ? "admin" : "citizen");
       } else {
         setUser(null);
         setUserRole(null);
@@ -52,15 +48,9 @@ const App = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         const role = session.user.user_metadata?.role || "citizen";
-
         setUser(session.user);
         setUserRole(role);
-
-        if (role === "admin") {
-          setActiveView("admin");
-        } else {
-          setActiveView("citizen");
-        }
+        setActiveView(role === "admin" ? "admin" : "citizen");
       } else {
         setUser(null);
         setUserRole(null);
@@ -71,18 +61,11 @@ const App = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ✅ Role-based login handler
   const handleLogin = (user) => {
     const role = user.user_metadata?.role || "citizen";
-
     setUser(user);
     setUserRole(role);
-
-    if (role === "admin") {
-      setActiveView("admin");
-    } else {
-      setActiveView("citizen");
-    }
+    setActiveView(role === "admin" ? "admin" : "citizen");
   };
 
   const logout = async () => {
@@ -97,47 +80,50 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-slate-900">
-      <NavBar
-        activeView={activeView}
-        setActiveView={setActiveView}
-        userRole={userRole}
-        logout={logout}
-      />
+    <>
+      {/* 🌧️ Rain ONLY on Home Page */}
+      {activeView === "home" && <RainOverlay />}
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {activeView === "home" && (
-          <HomePage setActiveView={setActiveView} />
-        )}
+      <div className="min-h-screen bg-gray-100 dark:bg-slate-900">
+        <NavBar
+          activeView={activeView}
+          setActiveView={setActiveView}
+          userRole={userRole}
+          logout={logout}
+        />
 
-        {activeView === "map" && (
-          <RiskMapPage userRole={userRole} />
-        )}
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          {activeView === "home" && (
+            <HomePage setActiveView={setActiveView} />
+          )}
 
-        {activeView === "analytics" && <AnalyticsPage />}
+          {activeView === "map" && (
+            <RiskMapPage userRole={userRole} />
+          )}
 
-        {activeView === "admin" && (
-          !user ? (
-            <AdminPage /> 
-          ) : userRole === "admin" ? (
-            <AdminPage />
-          ) : (
-            <div className="text-red-500 font-semibold">
-              Access denied. Admins only.
-            </div>
-          )
-        )}
+          {activeView === "analytics" && <AnalyticsPage />}
 
+          {activeView === "admin" &&
+            (!user ? (
+              <AdminPage />
+            ) : userRole === "admin" ? (
+              <AdminPage />
+            ) : (
+              <div className="text-red-500 font-semibold">
+                Access denied. Admins only.
+              </div>
+            ))}
 
-        {activeView === "citizen" && (
-          <CitizenPage onLogin={handleLogin} />
-        )}
+          {activeView === "citizen" && (
+            <CitizenPage onLogin={handleLogin} />
+          )}
 
-        {activeView === "about" && <AboutPage />}
-      </main>
+          {activeView === "about" && <AboutPage />}
+        </main>
 
-      <Footer setActiveView={setActiveView} />
-    </div>
+        <Footer setActiveView={setActiveView} />
+      </div>
+    </>
   );
 };
 
