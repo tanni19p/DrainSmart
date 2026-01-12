@@ -116,14 +116,18 @@ const App = () => {
 
         {activeView === "analytics" && <AnalyticsPage />}
 
-        {activeView === "admin" &&
-          (userRole === "admin" ? (
+        {activeView === "admin" && (
+          !user ? (
+            <AdminPage /> 
+          ) : userRole === "admin" ? (
             <AdminPage />
           ) : (
             <div className="text-red-500 font-semibold">
               Access denied. Admins only.
             </div>
-          ))}
+          )
+        )}
+
 
         {activeView === "citizen" && (
           <CitizenPage onLogin={handleLogin} />
